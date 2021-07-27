@@ -6,7 +6,11 @@
     <title>Home_page</title>
   </head>
   <body>
-    <h1>Hello World</h1>
-    <p>Here is our custom HTML template</p>
+    <h3>Top leads</h3>
+    <ul>
+      {% for lead in leads %}
+      <li>{{ lead }}</li>
+      {% endfor %}
+    </ul>
   </body>
 </html>
