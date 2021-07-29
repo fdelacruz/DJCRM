@@ -6,9 +6,9 @@
     <title>Home_page</title>
   </head>
   <body>
-    <a href="/leads">Go back</a>
+    <a href="{% url 'leads:lead-detail' lead.pk %}">Go back to {{ lead.first_name }} {{ lead.last_name }}</a>
     <hr>
-    <h1>Update lead: {{ lead.first_name }}{{ lead.last_name }}</h1>
+    <h1>Update {{ lead.first_name }} {{ lead.last_name }}</h1>
     <form method="post">
       {% csrf_token %}
       {{ form.as_p }}
