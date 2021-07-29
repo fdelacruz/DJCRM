@@ -1,11 +1,5 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Home_page</title>
-  </head>
-  <body>
+{% extends "base.html" %}
+{% block content %}
     <a href="{% url 'leads:lead-detail' lead.pk %}">Go back to {{ lead.first_name }} {{ lead.last_name }}</a>
     <hr>
     <h1>Update {{ lead.first_name }} {{ lead.last_name }}</h1>
@@ -14,6 +8,4 @@
       {{ form.as_p }}
       <button>Submit</button>
     </form>
-
-  </body>
-</html>
+{% endblock content %}
