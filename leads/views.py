@@ -44,7 +44,7 @@ class LeadCreateView(LoginRequiredMixin, generic.CreateView):
             from_email="test@they.com",
             recipient_list=["test@me.com"]
         )
-        return super(generic.LeadCreateView, self).form_valid(form)
+        return super(LeadCreateView, self).form_valid(form)
 
 
 class LeadUpdateView(LoginRequiredMixin, generic.UpdateView):
