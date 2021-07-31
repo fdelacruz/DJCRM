@@ -121,11 +121,13 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static"
+    BASE_DIR / 'static'
 ]
 
-STATIC_ROOT = "static_root"
+STATIC_ROOT = 'static_root'
 
 AUTH_USER_MODEL = 'leads.User'
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+LOGIN_REDIRECT_URL = '/leads'
