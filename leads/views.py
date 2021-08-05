@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from agents.mixins import OrganizerAndLoginRequiredMixin
 from .models import Lead
-from .forms import LeadModelForm, CustomUserCreationForm
+from .forms import LeadModelForm, CustomUserCreationForm, AssignAgentForm
 
 
 class SignupView(generic.CreateView):
@@ -112,3 +112,26 @@ class LeadDeleteView(OrganizerAndLoginRequiredMixin, generic.DeleteView):
         user = self.request.user
         # initial queryset of leads for the entire organization
         return Lead.objects.filter(organization=user.userprofile)
+
+
+class AssignAgentView(OrganizerAndLoginRequiredMixin, generic.FormView):
+    template_name = "leads/assign_agent.html"
+    form_class = AssignAgentForm
+
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(AssignAgentView, self).get_form_kwargs(**kwargs)
+        kwargs.update({
+            "request": self.request
+        })
+
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('leads:lead-list')
+
+    def form_valid(self, form):
+        agent = form.cleaned_data["agent"]
+        lead = Lead.objects.get(id=self.kwargs["pk"])
+        lead.agent = agent
+        lead.save()
+        return super(AssignAgentView, self).form_valid(form)
