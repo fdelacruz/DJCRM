@@ -4,7 +4,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from agents.mixins import OrganizerAndLoginRequiredMixin
 from .models import Lead, Category
-from .forms import LeadModelForm, CustomUserCreationForm, AssignAgentForm
+from .forms import (
+    LeadModelForm,
+    CustomUserCreationForm,
+    AssignAgentForm,
+    LeadCategoryUpdateForm
+)
 
 
 class SignupView(generic.CreateView):
@@ -99,7 +104,7 @@ class LeadUpdateView(OrganizerAndLoginRequiredMixin, generic.UpdateView):
         return Lead.objects.filter(organization=user.userprofile)
 
     def get_success_url(self):
-        return reverse('leads:lead-list')
+        return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
 
 
 class LeadDeleteView(OrganizerAndLoginRequiredMixin, generic.DeleteView):
@@ -196,3 +201,21 @@ class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
                 organization=user.agent.organization
             )
         return queryset
+
+
+class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
+    template_name = "leads/lead_category_update.html"
+    form_class = LeadCategoryUpdateForm
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organizer:
+            queryset = Lead.objects.filter(organization=user.userprofile)
+        else:
+            queryset = Lead.objects.filter(
+                organization=user.agent.organization)
+            queryset = queryset.filter(agent__user=user)
+        return queryset
+
+    def get_success_url(self):
+        return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
