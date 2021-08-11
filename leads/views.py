@@ -8,7 +8,8 @@ from .forms import (
     LeadModelForm,
     CustomUserCreationForm,
     AssignAgentForm,
-    LeadCategoryUpdateForm
+    LeadCategoryUpdateForm,
+    CategoryModelForm
 )
 
 
@@ -192,6 +193,59 @@ class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
             "leads": leads
         })
         return context
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organizer:
+            queryset = Category.objects.filter(
+                organization=user.userprofile
+            )
+        else:
+            queryset = Lead.objects.filter(
+                organization=user.agent.organization
+            )
+        return queryset
+
+
+class CategoryCreateView(OrganizerAndLoginRequiredMixin, generic.CreateView):
+    template_name = "leads/category_create.html"
+    form_class = CategoryModelForm
+
+    def get_success_url(self):
+        return reverse("leads:category-list")
+
+    def form_valid(self, form):
+        category = form.save(commit=False)
+        category.organization = self.request.user.userprofile
+        category.save()
+        return super(CategoryCreateView, self).form_valid(form)
+
+
+class CategoryUpdateView(OrganizerAndLoginRequiredMixin, generic.UpdateView):
+    template_name = "leads/category_update.html"
+    form_class = CategoryModelForm
+
+    def get_success_url(self):
+        return reverse("leads:category-list")
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organizer:
+            queryset = Category.objects.filter(
+                organization=user.userprofile
+            )
+        else:
+            queryset = Lead.objects.filter(
+                organization=user.agent.organization
+            )
+        return queryset
+
+
+class CategoryDeleteView(OrganizerAndLoginRequiredMixin, generic.DeleteView):
+    template_name = "leads/category_delete.html"
+
+    def get_success_url(self):
+        return reverse("leads:category-list")
 
     def get_queryset(self):
         user = self.request.user
